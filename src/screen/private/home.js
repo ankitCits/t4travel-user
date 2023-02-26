@@ -23,13 +23,16 @@ const myIcon = <Icon name="play" size={30} color="#900" />;
 import { useNavigation } from '@react-navigation/native';
 import images from '../../assets';
 import CommonBase from '../../component/CommonBase';
+import { connect } from 'react-redux';
 
 
-const Home = () => {
+const Home = (props) => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [mainSelected, setMainSelected] = useState("flight")
 
+
+  console.log("REDUX_IN_HOME>>",props.redux)
   return (
     // <SafeAreaView style={{ flex: 1 }}>
     //  {/* <View style={{backgroundColor:"red",color:'white',height:hp("30%")}}>
@@ -343,4 +346,18 @@ const style = StyleSheet.create({
 
   }
 });
-export default Home;
+// export default Home;
+// dispatcher functions
+function mapDispatchToProps(dispatch) {
+  return {
+      dispatch,
+  };
+}
+
+//getting props from redux
+function mapStateToProps(state) {
+  let redux = state;
+  return { redux };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,8 +1,12 @@
 import * as React from "react";
 import { Text, View } from "react-native";
 
-import { DefaultTheme, Provider } from "react-native-paper";
+import { DefaultTheme } from "react-native-paper";
 import Navigation from "./src/navigation";
+import { Provider } from 'react-redux';
+import configureStore from './src/redux/store/configureStore';
+
+const store = configureStore()
 
 export default function App() {
   const theme = {
@@ -13,7 +17,7 @@ export default function App() {
     }
   };
   return (
-    <Provider theme={theme}>
+    <Provider store = { store }>
       <Navigation />
     </Provider>
   );
