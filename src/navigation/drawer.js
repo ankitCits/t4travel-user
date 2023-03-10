@@ -55,14 +55,22 @@ import {
 // import Booking from "../screen/booking";
 import { View } from "react-native";
 import { Text } from "react-native";
+import { connect } from 'react-redux';
 // import Profile from "../screen/profile";
 // import Flightdetail from "../screen/flightdetail";
 
 // const Drawer = createDrawerNavigator();
 
-const MyDrawer = () => {
+const MyDrawer = (props) => {
   const Drawer = createDrawerNavigator();
   // const Stack = createNativeStackNavigator();
+
+
+const userAuth = async() => {
+  console.log("PROPS_IN_SIDE_DRAWER__",props.redux.userDataReducer)
+}
+
+console.log("PROPS_IN_SIDE_DRAWER__",props.redux.userDataReducer.userData)
   return (
     <Drawer.Navigator
     initialRouteName="Home"
@@ -111,7 +119,8 @@ const MyDrawer = () => {
                     marginLeft: wp("4%")
                   }}
                 >
-                  Ankit Singh
+                  {/* Ankit Singh */}
+                  {props.redux.userDataReducer.userData ? props.redux.userDataReducer.userData.first_name : "User"}
                 </Text>
                 <TouchableOpacity>
                   <Text
@@ -195,4 +204,18 @@ const MyDrawer = () => {
   );
 };
 
-export default MyDrawer;
+// export default MyDrawer;
+// dispatcher functions
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+//getting props from redux
+function mapStateToProps(state) {
+  let redux = state;
+  return { redux };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyDrawer);

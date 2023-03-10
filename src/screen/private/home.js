@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   ImageBackground,
@@ -24,6 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import images from '../../assets';
 import CommonBase from '../../component/CommonBase';
 import { connect } from 'react-redux';
+import { getAccessToken } from '../../storage';
 
 
 const Home = (props) => {
@@ -31,20 +32,18 @@ const Home = (props) => {
   const [email, setEmail] = useState('');
   const [mainSelected, setMainSelected] = useState("flight")
 
+  useEffect(()=>{
+    fetchToken()
+  })
+
+  const fetchToken = async() => {
+    let accesstoken = await getAccessToken()
+    console.log("ACCESS_TOKEN_IN_HOME>",accesstoken)
+  }
+
 
   console.log("REDUX_IN_HOME>>",props.redux)
   return (
-    // <SafeAreaView style={{ flex: 1 }}>
-    //  {/* <View style={{backgroundColor:"red",color:'white',height:hp("30%")}}>
-    // <Text style={{color:'white'}}>hhhhh</Text>
-    // </View> */}
-    // <ScrollView contentContainerStyle={style.container}>
-    // <View style={{backgroundColor:"red",color:'white',height:hp("30%")}}>
-    // <Text style={{color:'white'}}>hhhhh</Text>
-    // </View>
-
-    // </ScrollView>
-    // </SafeAreaView>
     <SafeAreaView style={{flex:1,backgroundColor:'#fff'}}>
     <StatusBar
       animated={true}
@@ -52,7 +51,7 @@ const Home = (props) => {
       barStyle="dark-content"
     />
       <ScrollView contentContainerStyle={style.container}>
-        <View style={{position: 'relative'}}>
+        <View style={{position: 'relative',backgroundColor:'rgba(0,0,0,0)'}}>
           <Image
             source={require('../../assets/images/homescreen.jpg')}
             style={style.image}
@@ -67,9 +66,6 @@ const Home = (props) => {
             <View
               style={{
                 flexDirection: 'row',
-                // backgroundColor: 'red',
-                // width: 100,
-                // height: 100,
                 marginRight: wp('60%'),
                 marginTop: hp('1%'),
                 alignSelf: 'center',
@@ -203,7 +199,7 @@ const style = StyleSheet.create({
     // borderBottomEndRadius:25,
     borderBottomLeftRadius: 50,
     borderBottomRightRadius: 50,
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(0,0,0,0)',
     opacity: 0.7
     // position:'relative'
   },
@@ -249,7 +245,7 @@ const style = StyleSheet.create({
     height: hp('11%'),
     color: 'white',
     top: hp('-7%'),
-    borderRadius: 5,
+    borderRadius: 15,
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',

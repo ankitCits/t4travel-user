@@ -4,6 +4,8 @@ import Public from "../screen/public"
 import Login from '../screen/public/login';
 import Signup from '../screen/public/signup';
 import ForgetPasswordOtp from '../screen/public/forgetpasswordOtp';
+import SignupVerify from '../screen/public/signupVerify';
+import ForgetPasswordEmail from '../screen/public/forgetpassword';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +24,8 @@ function PublicStack() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="ForgetPasswordOtp" component={ForgetPasswordOtp} />
+      <Stack.Screen name="SignupVerify" component={SignupVerify} />
+      <Stack.Screen name="ForgetPasswordEmail" component={ForgetPasswordEmail} />
     </Stack.Navigator>
   );
 }

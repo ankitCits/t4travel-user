@@ -25,7 +25,9 @@ import Icond from 'react-native-vector-icons/Fontisto';
 import Iconss from 'react-native-vector-icons/AntDesign';
 import Icont from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
-
+import { connect } from 'react-redux';
+import StarRating from 'react-native-star-rating';
+import Util from '../../utils/Validator';
 const myIcon = <IconI name="location-sharp" size={20} color="#0F63F4" />;
 const myIcon1 = <Icons name="keyboard-arrow-down" size={20} color="#000" />;
 const myIcon2 = <Icon name="calendar" size={20} color="#0F63F4" />;
@@ -33,14 +35,20 @@ const myIcon3 = <Icons name="local-offer" size={20} color="#A0A0A0" />;
 const myIcon4 = <Iconss name="mobile1" size={20} color="#A0A0A0" />;
 const myIcon5 = <Icont name="mail" size={20} color="#A0A0A0" />;
 const myIcon6 = <IconI name="people" size={20} color="#0F63F4" />;
-const HotelCheckout = () => {
+const HotelCheckout = (props) => {
     const navigation = useNavigation();
+
+
+
+    
+    console.log("PROPS_IN_HOTEL_DETAL_CHECKOUT",props.route.params)
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={{backgroundColor: '#FFFFFF'}}>
         <ImageBackground
         imageStyle={{opacity:0.8}}
-          source={require('../../assets/images/hotels.png')}
+          // source={require('../../assets/images/hotels.png')}
+          source={{uri:props.route.params.item.HotelPicture}}
           style={style.header}>
           <View style={style.headerapp}>
             <TouchableOpacity
@@ -55,7 +63,7 @@ const HotelCheckout = () => {
                 color: '#fff',
                 fontWeight: '500',
                 textAlign: 'center',
-                marginLeft: wp('20%'),
+                marginLeft: wp('25%'),
               }}>
               Checkout for Hotel
             </Text>
@@ -68,13 +76,25 @@ const HotelCheckout = () => {
             alignItems: 'center',
             margin: 15,
           }}>
-          <Text style={{fontSize: 19, color: '#000', fontWeight: '600'}}>
-            Burj Al Arab
+          <Text style={{fontSize: 19, color: '#000', fontWeight: '600',width:250}}>
+           {props.route.params.item.HotelName}
           </Text>
-          <Image
+          {/* <Image
             source={require('../../assets/images/star.png')}
             style={{width: 80, height: 12}}
-          />
+          /> */}
+          <StarRating
+                      disabled={false}
+                      maxStars={5}
+                      rating={props.route.params.item.StarRating}
+                      starStyle={{ color: '#0F63F4', marginRight: 6 }}
+                      starSize={10}
+                    // emptyStar={'ios-star-outline'}
+                    // fullStar={'ios-star'}
+                    // halfStar={'ios-star-half'}
+                    // iconSet={'Ionicons'}
+                    // selectedStar={(rating) => this.onStarRatingPress(rating)}
+                    />
         </View>
         <View
           style={{
@@ -95,7 +115,16 @@ const HotelCheckout = () => {
               fontWeight: '300',
               marginLeft: wp('5%'),
             }}>
-            Check-In
+            Check-In <Text
+             style={{
+              fontSize: 13,
+              color: '#000',
+              fontWeight: '500',
+              marginLeft: wp('5%'),
+            }}
+            >
+            {"  " + Util.formatDDMMM(props.route.params.hotel.checkIn)}
+            </Text>
           </Text>
           <TouchableOpacity>
             <Icon
@@ -126,7 +155,16 @@ const HotelCheckout = () => {
               fontWeight: '300',
               marginLeft: wp('5%'),
             }}>
-            Check-Out
+            Check-Out <Text
+             style={{
+              fontSize: 13,
+              color: '#000',
+              fontWeight: '500',
+              marginLeft: wp('5%'),
+            }}
+            >
+            {"  " + Util.formatDDMMM(props.route.params.hotel.checkOut)}
+            </Text>
           </Text>
           <TouchableOpacity>
             <Icon
@@ -164,22 +202,22 @@ const HotelCheckout = () => {
               fontWeight: '500',
               marginLeft: wp('5%'),
             }}>
-            $50.00
+            {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.PublishedPrice}
           </Text>
         </View>
 
-        <TouchableOpacity style={style.press}>
+        {/* <TouchableOpacity style={style.press}>
           <Text style={{color: 'white', fontSize: 12, textAlign: 'center'}}>
             Upgrade Your Stay
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={style.Price}>
           <Text style={style.title}>Price Breakup</Text>
-          <Text style={style.short}>Total amount: $50.00</Text>
-          <Text style={style.short}>Price after discount: $40.00</Text>
-          <Text style={style.short}>Total amount to be paid: $50.00</Text>
-          <Text style={style.short}>Total discount: $50.00</Text>
-          <Text style={style.short}>Tax & service: $50.00</Text>
+          <Text style={style.short}>Total amount: {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.PublishedPrice}</Text>
+          <Text style={style.short}>Price after discount: {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.TotalGSTAmount}</Text>
+          <Text style={style.short}>Total amount to be paid: {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.TotalGSTAmount}</Text>
+          <Text style={style.short}>Total discount: {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.Discount}</Text>
+          <Text style={style.short}>Tax & service: {props.route.params.item.Price.CurrencyCode + ' ' + props.route.params.item.Price.TotalGSTAmount}</Text>
           <Text style={style.short}>Coupan codes: T4travel</Text>
         </View>
         <Text style={style.title1}>Guest details</Text>
@@ -374,4 +412,19 @@ const style = StyleSheet.create({
   },
 });
 
-export default HotelCheckout;
+// export default HotelCheckout;
+// export default HotelSearchResult;
+// dispatcher functions
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+//getting props from redux
+function mapStateToProps(state) {
+  let redux = state;
+  return { redux };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HotelCheckout);

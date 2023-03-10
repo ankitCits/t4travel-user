@@ -6,10 +6,11 @@ import PublicRoute from './PublicStack';
 import MyDrawer from './drawer';
 import { ActivityIndicator, View } from 'react-native';
 import PrivateStack from './PrivateStack';
-const Navigation = ({ props }) => {
+import { connect } from 'react-redux';
+const Navigation = (props) => {
   //   const authContext = useContext(AuthContext);
   //   const {userToken, isLoading} = authContext;
-  const userToken = "null"
+  const userToken = props.redux.userDataReducer.userValidator
   const isLoading = false
   useEffect(() => {
     setTimeout(() => {
@@ -19,6 +20,7 @@ const Navigation = ({ props }) => {
   }, []);
 
   const navRef = useNavigationContainerRef();
+  console.log("REDUX_IN_NAV_INDEX>>", props.redux.userDataReducer)
   return (
     <NavigationContainer ref={navRef} options={{ headerShown: false }}>
       {
@@ -31,10 +33,10 @@ const Navigation = ({ props }) => {
             }}>
             <ActivityIndicator size="small" color={'#0759E2'} />
           </View>
-        ) : userToken == null ? (
-          <PublicRoute />
-        ) : (
+        ) : userToken ? (
           <PrivateStack />
+        ) : (
+          <PublicRoute />
         )
         // <PrivateRoute />
       }
@@ -42,4 +44,19 @@ const Navigation = ({ props }) => {
   );
 };
 
-export default Navigation;
+// export default Navigation;
+// dispatcher functions
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+//getting props from redux
+function mapStateToProps(state) {
+  let redux = state;
+  return { redux };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navigation);
+

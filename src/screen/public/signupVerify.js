@@ -1,30 +1,28 @@
 import React, { useState } from "react";
-import { Image, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icont from 'react-native-vector-icons/Fontisto';
+import Iconss from 'react-native-vector-icons/AntDesign';
 import Icons from 'react-native-vector-icons/Ionicons';
-import IconsM from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Iconss from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
-
 import { connect } from "react-redux";
 import FlashMessage, { showMessage } from 'react-native-flash-message';
-import { loginAuth, userContextLogin } from "../../redux/actions/auth";
-import { ActivityIndicator } from "react-native-paper";
+import { postSignupVerify, postSignupVerifyResend, userContextLogin } from "../../redux/actions/auth";
 import Util from "../../utils/Validator";
+import { ActivityIndicator } from "react-native-paper";
 import AwesomeAlert from 'react-native-awesome-alerts';
-import { setAccessToken } from "../../storage";
-const Login = (props) => {
-  const [email, setEmail] = useState('ankit01patel02@gmail.com');
-  const [password, setPassword] = useState('112');
+
+
+const SignupVerify = (props) => {
+  const [otp, setOtp] = useState("");
   const [loader, setLoader] = useState(false)
   const navigation = useNavigation();
-  const [alertShow, setAlertShow] = useState(false)
-  const [alertText, setAlertText] = useState('')
+
+const [alertShow, setAlertShow] = useState(false)
+const [alertText, setAlertText] = useState('')
 
   const showError = (msg) => {
     setAlertText(msg)
@@ -38,45 +36,45 @@ const Login = (props) => {
     setAlertShow(false)
   };
 
-  const submitLogin = async () => {
-    console.log("LOGIN__")
+
+  const submitSignupOtp = async () => {
+    console.log("submitSignupOtp", props.redux.userDataReducer.userData.email)
     try {
-      // Validate email
-      let result = Util.validateEmail(email);
+      // Validate OTP
+      let result = Util.isEmpty(otp);
       if (result === true) {
-        showError("Please Enter the Valid UserName & Password.")
+        showError("Please Fill Valid OTP .")
         return;
       }
 
-      // Validate Last Name
-      result = Util.isEmpty(password);
-      if (result === true) {
-        showError("Please Enter the Valid UserName & Password.")
-        return;
-      }
+      // if (otp.trim().length != 4) {
+      //   showError("Fill Valid Otp")
+      //   return;
+      // }
 
       // Creating Valid Payload :
       let Payload = {
-        email: email,
-        password: password
+        email: props.redux.userDataReducer ? props.redux.userDataReducer.userData.email : "",
+        otp: otp
       }
       setLoader(true)
-      let postLoginReq = await props.dispatch(loginAuth(Payload));
-      if (postLoginReq.status_code == 1) {
-        console.log('LOGIN_VERIFY_RESPONSE_IN_PAGE :', postLoginReq);
+      let postSignupReq = await props.dispatch(postSignupVerify(Payload));
+      if (postSignupReq.status_code == 1) {
+        console.log('SIGNUP_VERIFY_RESPONSE_IN_PAGE :', postSignupReq);
         setLoader(false)
-        await setAccessToken(postLoginReq.auth_token)
+        // token
+        await setAccessToken(postSignupReq.token)
         await props.dispatch(userContextLogin());
         // navigation.navigate("SignupVerify")
       } else {
         setLoader(false)
-        showError(`${postLoginReq.message}`)
+        showError(`${postSignupReq.message}`)
         return
       }
     } catch (error) {
       setLoader(false)
       showError(`${error}`)
-      console.log("CATCH_IN_LOGIN_VERIFY", error)
+      console.log("CATCH_IN_SIGNUP_VERIFY", error)
     }
 
 
@@ -85,21 +83,43 @@ const Login = (props) => {
     // showError()
   }
 
+  const submitSignupOtpResend = async () => {
+    try {
+      // Creating Valid Payload :
+      let Payload = {
+        email: props.redux.userDataReducer ? props.redux.userDataReducer.userData.email : "",
+      }
+      setLoader(true)
+      let postSignupReq = await props.dispatch(postSignupVerifyResend(Payload));
+      if (postSignupReq.status_code == 1) { 
+        Alert.alert('Sucessfully Resend Otp.', [
+          {text: 'OK'},
+        ]);
+        setLoader(false)
+      }else{
+        Alert.alert('Failed Resend Otp.', [
+          {text: 'OK'},
+        ]);
+        setLoader(false)
+      }
+    } catch (error) {
+      console.log("ERROR_IN_SIGNUP_RESEND_OTP", error)
+    }
+  }
+
+  // console.log("PROPS_IN_SIGNUP_VERIFY :", props.redux.userDataReducer.userData)
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
       <StatusBar translucent barStyle="dark-content" backgroundColor="#fff" />
-      {props.route.params &&
-        <View style={styles.header}>
-          <View style={styles.headerapp}>
-            <TouchableOpacity
-            //   onPress={()=>navigation.pop()}
-            >
-              <Iconss name="arrowleft" size={30} color="#000" />
-            </TouchableOpacity>
-          </View>
+      <View style={styles.header}>
+        <View style={styles.headerapp}>
+          <TouchableOpacity
+            onPress={() => navigation.pop()}
+          >
+            <Iconss name="arrowleft" size={30} color="#000" />
+          </TouchableOpacity>
         </View>
-      }
-
+      </View>
       <View style={{ backgroundColor: '#fff', height: hp('25%'), justifyContent: 'center', alignItems: 'center' }}>
         <Image
           source={require('../../assets/images/logo.png')}
@@ -108,66 +128,43 @@ const Login = (props) => {
       </View>
       <Text
         style={{
-          fontSize: 35,
+          fontSize: 30,
           marginTop: hp("3%"),
           marginLeft: wp("10%"),
           color: "#000",
           fontWeight: "600",
           // fontFamily: 'Roboto',
-          marginBottom: hp("4%")
+          // marginBottom: hp("4%")
         }}
       >
-        Login
+        Signup OTP Verification
+      </Text>
+      <Text style={{ fontSize: 14, color: '#707070', marginLeft: wp("10%"), marginTop: 10 }}>
+        An 6 digit code has been sent to
+      </Text>
+      <Text style={{ fontSize: 12, color: '#252525', marginLeft: wp("10%"), marginBottom: hp("4%") }}>
+        {props.redux.userDataReducer.userData ? props.redux.userDataReducer.userData.email : ""}
       </Text>
       <View style={styles.input}>
-        <Icon name="user" size={16} color="#7A869A" style={styles.icons} />
+        {/* <Icon name="user" size={20} color="#7A869A"  style={styles.icons} /> */}
         <TextInput
           // style={styles.input}
-          color="black"
-          placeholder="Email"
+          style={{ fontSize: 13, width: '90%', height: 50 }}
+          placeholder="Enter OTP"
           placeholderTextColor={"#7A869A"}
           autoCapitalize='none'
-          onChangeText={(emails) => {
-            setEmail(emails);
+          onChangeText={(otps) => {
+            setOtp(otps);
           }}
-          value={email}
-          style={{ fontSize: 13, width: '90%', height: 50 }}
+          value={otp}
         />
       </View>
-      <View style={styles.input1}>
-        <Icont name="locked" size={16} color="#7A869A" style={styles.icons} />
-        <TextInput
-          // start={}
-          color="black"
-          autoCapitalize='none'
-          secureTextEntry={true}
-          placeholder="Password"
-          placeholderTextColor={"#7A869A"}
-          onChangeText={(password) => {
-            setPassword(password);
-          }}
-          value={password}
-          style={{ fontSize: 13, width: '90%', height: 50 }}
-        />
-      </View>
-      <View style={styles.checkboxContainer}>
-        <View style={styles.boxes}>
 
-          <Icons name="checkbox" size={16} color="#0F63F4" />
-          <Text style={styles.label}>Remember Me</Text>
-        </View>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ForgetPasswordEmail")}
-        >
-          <Text style={styles.label1}>Forgot Password ?</Text>
-        </TouchableOpacity>
-      </View>
       <TouchableOpacity
         style={styles.pressable}
-        onPress={() => submitLogin()}
+        onPress={() => submitSignupOtp()}
       >
-
         {loader ?
           <ActivityIndicator size="small" color={"#fff"} />
           :
@@ -178,42 +175,43 @@ const Login = (props) => {
               alignItems: "center",
               alignContent: "center",
               color: '#fff',
-              fontWeight: '600'
+              fontWeight: '500'
             }}
           >
             SUBMIT
           </Text>
         }
+
       </TouchableOpacity>
       <View style={styles.sign}>
-        <Text style={styles.label1}>Don't have an account?</Text>
+        <Text style={styles.label1}>Didn't receive the link?</Text>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("Signup")}
+        onPress={() => submitSignupOtpResend()}
         >
-          <Text style={styles.label}> Sign up</Text>
+          <Text style={styles.label}> Resend</Text>
         </TouchableOpacity>
       </View>
       {/* <FlashMessage position="top" /> */}
       <AwesomeAlert
-        show={alertShow}
-        showProgress={false}
-        title="Error"
-        message={alertText}
-        closeOnTouchOutside={true}
-        closeOnHardwareBackPress={false}
-        showCancelButton={false}
-        showConfirmButton={true}
-        // cancelText="No, cancel"
-        confirmText="Ok, Got it."
-        confirmButtonColor="red"
-        onCancelPressed={() => {
-          hideAlert();
-        }}
-        onConfirmPressed={() => {
-          hideAlert();
-        }}
-      />
+          show={alertShow}
+          showProgress={false}
+          title="Error"
+          message={alertText}
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={false}
+          showConfirmButton={true}
+          // cancelText="No, cancel"
+          confirmText="Ok, Got it."
+          confirmButtonColor="red"
+          onCancelPressed={() => {
+            hideAlert();
+          }}
+          onConfirmPressed={() => {
+            hideAlert();
+          }}
+        />
     </SafeAreaView>
   )
 };
@@ -258,8 +256,7 @@ const styles = StyleSheet.create({
     // marginTop: hp("1%"),
     borderWidth: 0.5,
     borderRadius: 5,
-    paddingLeft: 15,
-    alignItems: 'center'
+    paddingLeft: 15
   },
   input1: {
     borderColor: "grey",
@@ -273,8 +270,7 @@ const styles = StyleSheet.create({
     marginTop: hp("2.5%"),
     borderWidth: 0.5,
     borderRadius: 5,
-    paddingLeft: 15,
-    alignItems: 'center'
+    paddingLeft: 15
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -285,29 +281,30 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "#000",
     borderColor: "#000"
-    // backgroundColor:"#F4BD2F"
+
   },
   label: {
-    left: 5,
-    // marginTop: hp("0.7%"),
+    // marginleft: wp("2%"),
+    marginTop: hp("0.7%"),
     color: "#0F63F4",
-    // backgroundColor: '#F4BD2F',
+
+    // fontWeight: "400",
     // fontFamily: 'Roboto',
     alignItems: "center",
     fontWeight: '500',
+    // justifyContent:'center'
   },
   label1: {
     marginleft: wp("2%"),
     marginTop: hp("0.5%"),
     color: "#7A869A",
-    // backgroundColor: '#F4BD2F',
+
     fontSize: 14
     // fontFamily: 'Roboto',
   },
   boxes: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: "center"
   },
   pressable: {
     width: wp("80%"),
@@ -317,14 +314,15 @@ const styles = StyleSheet.create({
     color: "white",
     borderRadius: 8,
     justifyContent: "center",
-    marginTop: hp("8%")
+    marginTop: hp("5%")
   },
   sign: {
     flexDirection: "row",
     alignSelf: "center",
     marginTop: hp("5%"),
-    marginBottom: hp("5%"),
-    alignItems: 'center'
+    alignItems: 'center',
+    alignSelf: 'center'
+    // marginBottom: hp("5%")
   },
   footer: {
     width: wp("100%")
@@ -332,7 +330,7 @@ const styles = StyleSheet.create({
     // height:hp("30%")
   },
   icons: {
-    // marginTop: hp("1.5%"),
+    marginTop: hp("1.5%"),
     marginRight: wp("2%")
   },
   icons1: {
@@ -354,7 +352,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// export default Login;
+// export default SignupVerify;
 // dispatcher functions
 function mapDispatchToProps(dispatch) {
   return {
@@ -368,4 +366,4 @@ function mapStateToProps(state) {
   return { redux };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(SignupVerify);

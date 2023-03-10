@@ -12,11 +12,19 @@ import {
 
 
 import Icon from 'react-native-vector-icons/Ionicons';
-const CustomDrawer = (props,navigation) => {
+import { connect } from "react-redux";
+import { userContextLogin, userContextLogout } from "../redux/actions/auth";
+import { removeAccessToken } from "../storage";
+const CustomDrawer = (props) => {
   // const prof = ()=>{
   //   navigation.navigate(Profile)
   // }
 
+  const logOut = async() => {
+    await removeAccessToken()
+    await props.dispatch(userContextLogout());
+  }
+console.log("PROPS_IN_CUSTOM_DRAWER :",props.redux)
   return (
     <View style={styles.container}>
       <DrawerContentScrollView {...props}>
@@ -67,7 +75,9 @@ const CustomDrawer = (props,navigation) => {
         <DrawerItemList {...props} />
         <DrawerItem
           label="Logout"
-          onPress={() => {}}
+          onPress={() => {
+            logOut()
+          }}
 
           // style={{ right:20 }}
           icon={({ focused, color, size }) => <Icon color={'#000'} size={size} name={focused ? `exit` : `exit-outline`} />}
@@ -96,4 +106,18 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CustomDrawer;
+// export default CustomDrawer;
+// dispatcher functions
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+//getting props from redux
+function mapStateToProps(state) {
+  let redux = state;
+  return { redux };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CustomDrawer);

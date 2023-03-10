@@ -101,7 +101,7 @@ export default function CommonBase() {
         </View>
         <ScrollView
           horizontal={true}
-          vertical={false}
+          // vertical={false}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -135,6 +135,86 @@ export default function CommonBase() {
               Flight - Hotel
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{width: wp('25%'), height: hp('25%'), alignSelf: 'center'}}>
+            <Image
+              source={require('../assets/images/dubai.png')}
+              style={{alignSelf: 'center'}}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'black',
+                textAlign: 'center',
+                marginTop: hp('-5%'),
+              }}>
+              Australia
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                color: '#0759E2',
+                textAlign: 'center',
+                marginTop: hp('0.5%'),
+              }}>
+              Flight - Hotel
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{width: wp('25%'), height: hp('25%'), alignSelf: 'center'}}>
+            <Image
+              source={require('../assets/images/dubai.png')}
+              style={{alignSelf: 'center'}}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'black',
+                textAlign: 'center',
+                marginTop: hp('-5%'),
+              }}>
+              India
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                color: '#0759E2',
+                textAlign: 'center',
+                marginTop: hp('0.5%'),
+              }}>
+              Flight - Hotel
+            </Text>
+          </TouchableOpacity>
+
+
+          <TouchableOpacity
+            style={{width: wp('25%'), height: hp('25%'), alignSelf: 'center'}}>
+            <Image
+              source={require('../assets/images/dubai.png')}
+              style={{alignSelf: 'center'}}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'black',
+                textAlign: 'center',
+                marginTop: hp('-5%'),
+              }}>
+              Mumbai
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                color: '#0759E2',
+                textAlign: 'center',
+                marginTop: hp('0.5%'),
+              }}>
+              Flight - Hotel
+            </Text>
+          </TouchableOpacity>
+
 
           <TouchableOpacity
             style={{width: wp('25%'), height: hp('25%'), alignSelf: 'center'}}>
@@ -491,6 +571,7 @@ export default function CommonBase() {
             </View>
           </ScrollView>
         </View>
+
         <View style={{marginBottom:-150}} />
         </View>
     </SafeAreaView>
